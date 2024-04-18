@@ -1,26 +1,20 @@
-# okmes-webcontainer-desktop
+# OkMes-WebContainer
 
-An Electron application with Vue
+## 项目开始
 
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
-
-## Project Setup
-
-### Install
+### 安装
 
 ```bash
 $ pnpm install
 ```
 
-### Development
+### 开发
 
 ```bash
 $ pnpm dev
 ```
 
-### Build
+### 构建
 
 ```bash
 # For windows
@@ -31,4 +25,15 @@ $ pnpm build:mac
 
 # For Linux
 $ pnpm build:linux
+```
+
+### Debian 应用安装
+
+```bash
+# 安装
+sudo dpkg -i *.deb
+# 查看
+sudo dpkg -l | grep *
+# 卸载
+sudo dpkg -r *
 ```
