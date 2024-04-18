@@ -3,6 +3,8 @@ import { LocalStorage } from 'node-localstorage'
 
 import { StateMessageState, MessageActions } from './message_handler'
 
+import { machineIdSync } from 'node-machine-id'
+
 export default class GlobalController {
   static localStorage = new LocalStorage('./config')
   static mainWindow = null
@@ -19,7 +21,7 @@ export default class GlobalController {
     properties: [
       {
         property: 'url',
-        value: this.config.url,
+        value: GlobalController.config.url,
         valueType: 'String',
         regex: ''
       }
@@ -41,7 +43,7 @@ export default class GlobalController {
   }
 
   static themes() {
-    const { type, id } = this.config
+    const { type, id } = GlobalController.config
     return {
       state: `${type}/${MessageActions.state}/${id}`,
       debug: `${type}/${MessageActions.debug}/${id}`,
@@ -55,18 +57,22 @@ export default class GlobalController {
   }
 
   static _initConfig(k, v) {
-    if (!this.localStorage._keys.includes(k)) {
-      this.localStorage.setItem(k, JSON.stringify(v))
+    if (!GlobalController.localStorage._keys.includes(k)) {
+      v.id = uniqueId()
+
+      GlobalController.localStorage.setItem(k, JSON.stringify(v))
       return
     }
 
-    let data = this.localStorage.getItem(k)
+    let data = GlobalController.localStorage.getItem(k)
     if (isNil(data)) return
 
-    this.config = JSON.parse(data)
+    GlobalController.config = JSON.parse(data)
   }
 
   static ensureInitialized() {
-    this._initConfig('config', this.config)
+    GlobalController._initConfig('config', GlobalController.config)
+
+    console.log(machineIdSync())
   }
 }
