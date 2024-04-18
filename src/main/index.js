@@ -3,6 +3,7 @@ import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { createWindow } from './windows'
 import './ipc'
 import global from './global'
+import Socket from './socket'
 
 // 防止应用重复启动
 // const lock = app.requestSingleInstanceLock({
@@ -34,3 +35,5 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+Socket.init()

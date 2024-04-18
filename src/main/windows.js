@@ -36,7 +36,7 @@ export function createWindow() {
   })
 
   mainWindow.on('close', () => {
-    global.allWins.setting = null
+    global.mainWindow = null
   })
 
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {

@@ -9,6 +9,7 @@
 
 <script setup>
 import Button from './Button.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 const props = defineProps(['dialog'])
 
 const onBack = () => {
@@ -17,16 +18,16 @@ const onBack = () => {
 
 const onReload = () => {
   webview.reload()
+  ElMessage.success('刷新成功')
 }
 
 const onSetting = () => {
   props.dialog.open()
 }
 
-const onExit = () => {
-  if (confirm('是否退出')) {
-    window.api.exit()
-  }
+const onExit = async () => {
+  await ElMessageBox.confirm('请问是否退出?', '提示')
+  window.api.exit()
 }
 </script>
 
