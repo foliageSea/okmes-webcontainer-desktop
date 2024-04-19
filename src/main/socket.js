@@ -7,13 +7,14 @@ import os from 'os'
 import global from './global'
 import { MessageHandler, StateMessageState } from './message_handler'
 
-export default class Socket {
+export default class $ {
   static emitter = mitt()
   static connected = false
   static client = null
+  static multicast = null
 
   static init() {
-    Socket.emitter.on('MqttServerInfoCollectedEvent', Socket.handleMqttServerInfoCollectedEvent)
+    $.emitter.on('MqttServerInfoCollectedEvent', $.handleMqttServerInfoCollectedEvent)
 
     // 组播地址和端口
     const multicastAddress = '224.0.0.167'
@@ -24,30 +25,27 @@ export default class Socket {
       try {
         const message = JSON.parse(msg.toString())
         if (message.appName !== 'iReady') return
-         mqttServerInfo = {
+        mqttServerInfo = {
           address: rinfo.address,
           port: message.mqttServerPort
         }
       } catch (e) {
-        console.log("message反序列化失败");
+        console.log('message反序列化失败')
         return
       }
 
-      Socket.emitter.emit('MqttServerInfoCollectedEvent', mqttServerInfo)
-
+      $.emitter.emit('MqttServerInfoCollectedEvent', mqttServerInfo)
     }
     const onError = (err) => {
       console.log(err)
     }
 
-    new Multicast(multicastAddress, port, onMessage, onError).init()
+    $.multicast = new Multicast(multicastAddress, port, onMessage, onError)
+    $.multicast.init()
   }
 
   static handleMqttServerInfoCollectedEvent(e) {
-
-
-    if (Socket.connected) return
-
+    if ($.connected) return
 
     try {
       const options = {
@@ -59,44 +57,44 @@ export default class Socket {
           retain: true
         }
       }
-      Socket.client = mqtt.connect(`mqtt://${e.address}:${e.port}`, options)
+      $.client = mqtt.connect(`mqtt://${e.address}:${e.port}`, options)
     } catch (e) {
       console.log('连接 MQTTServer 失败', e)
-      Socket.connected = false
-      Socket.client = null
+      $.connected = false
+      $.client = null
       return
     }
 
-    Socket.client.on('connect', async () => {
-      console.log(`连接 MQTTServer: ${e.address}:${e.port} 成功`);
+    $.client.on('connect', async () => {
+      console.log(`连接 MQTTServer: ${e.address}:${e.port} 成功`)
       // 订阅主题
       const themes = global.themes()
       for (const key in themes) {
-        Socket.client.subscribe(themes[key])
+        $.client.subscribe(themes[key])
       }
-       
-      await Socket.registerStateMessage()
-      await Socket.registerAliasMessage()
+
+      await $.registerStateMessage()
+      await $.registerAliasMessage()
     })
 
-    Socket.client.on('message', (topic, message) => MessageHandler.handle(topic, message))
+    $.client.on('message', (topic, message) => MessageHandler.handle(topic, message))
 
-    Socket.client.on('close', function () {
+    $.client.on('close', function () {
       console.log(`MQTTServer(${e.address}:${e.port}) 连接断开...`)
-      Socket.client.end()
-      Socket.connected = false
-      Socket.client = null
+      $.client.end()
+      $.connected = false
+      $.client = null
     })
 
-    Socket.connected = true
+    $.connected = true
   }
 
   /**
    * 注册设备
-   * @returns void 
+   * @returns void
    */
   static registerStateMessage() {
-    if (!Socket.connected) return
+    if (!$.connected) return
     const { state } = global.themes()
 
     global.stateMessage.state = StateMessageState.online
@@ -105,19 +103,34 @@ export default class Socket {
       item.value = global.config.url
     }
 
+    const host = $.multicast.getLocalIP()
+    console.log('本机IP', host)
+    if (!isNil(host)) {
+      global.stateMessage.hardware.networkInterface = []
+      global.stateMessage.hardware.networkInterface.push({
+        name: 'eth0',
+        ip: host,
+        mac: '',
+        type: 'wlan',
+        state: 'enable',
+        upflow: 1024,
+        downflow: 2048
+      })
+    }
+
     try {
-      Socket.client.publish(state, JSON.stringify(global.stateMessage), true)
+      $.client.publish(state, JSON.stringify(global.stateMessage), true)
     } catch (e) {
       console.error(e)
     }
   }
 
   static registerAliasMessage() {
-    if (!Socket.connected) return
+    if (!$.connected) return
     const { rename } = global.themes()
     global.renameMessage.alias = global.config.alias
     try {
-      Socket.client.publish(rename, JSON.stringify(global.renameMessage), true)
+      $.client.publish(rename, JSON.stringify(global.renameMessage), true)
     } catch (e) {
       console.error(e)
     }
@@ -130,11 +143,10 @@ class Multicast {
     this.port = port
     this.onMessage = onMessage
     this.onError = onError
+    this.interfaces = os.networkInterfaces()
   }
 
   init() {
-    const interfaces = os.networkInterfaces()
-
     // 创建 UDP 套接字
     const socket = dgram.createSocket({
       type: 'udp4',
@@ -145,11 +157,11 @@ class Multicast {
     socket.bind(this.port, () => {
       socket.setBroadcast(true)
       // 绑定到所有网卡上的组播地址
-      Object.keys(interfaces).forEach((ifname) => {
-        interfaces[ifname].forEach((iface) => {
+      Object.keys(this.interfaces).forEach((ifname) => {
+        this.interfaces[ifname].forEach((iface) => {
           if (iface.family === 'IPv4' && !iface.internal) {
             socket.addMembership(this.multicastAddress, iface.address)
-            console.log("网卡:", iface.address,'加入组播',this.multicastAddress)
+            console.log('网卡:', iface.address, '加入组播', this.multicastAddress)
           }
         })
       })
@@ -163,5 +175,25 @@ class Multicast {
     socket.on('error', (err) => {
       this.onError(err)
     })
+  }
+
+  getLocalIP() {
+    const list = []
+    const interfaces = this.interfaces
+
+    for (const ifname in interfaces) {
+      if (Object.prototype.hasOwnProperty.call(interfaces, ifname)) {
+        const ifaceList = interfaces[ifname]
+        for (let i = 0; i < ifaceList.length; i++) {
+          const iface = ifaceList[i]
+          if (iface.family === 'IPv4' && !iface.internal) {
+            if (!iface.address.endsWith('.1')) {
+              list.push(iface.address)
+            }
+          }
+        }
+      }
+    }
+    return list.length > 0 ? list[0] : null
   }
 }

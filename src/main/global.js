@@ -2,6 +2,7 @@ import { isNil } from 'lodash'
 import { LocalStorage } from 'node-localstorage'
 
 import { StateMessageState, MessageActions } from './message_handler'
+import { Snowflake, getRandomAlias } from './util'
 
 export default class $ {
   static localStorage = new LocalStorage('./config')
@@ -23,7 +24,10 @@ export default class $ {
         valueType: 'String',
         regex: ''
       }
-    ]
+    ],
+    hardware: {
+      networkInterface: []
+    }
   }
   static willStateMessage = {
     event: 'register',
@@ -56,6 +60,8 @@ export default class $ {
 
   static _initConfig(k, v) {
     if (!$.localStorage._keys.includes(k)) {
+      $.config.id = +new Snowflake(1, 1).generate()
+      $.config.alias = getRandomAlias()
       $.localStorage.setItem(k, JSON.stringify(v))
       return
     }
@@ -63,7 +69,14 @@ export default class $ {
     let data = $.localStorage.getItem(k)
     if (isNil(data)) return
 
-    $.config = JSON.parse(data)
+    try {
+      $.config = JSON.parse(data)
+    } catch (e) {
+      $.config.id = +new Snowflake(1, 1).generate()
+
+      $.config.alias = getRandomAlias()
+      $.localStorage.setItem(k, JSON.stringify(v))
+    }
   }
 
   static ensureInitialized() {
