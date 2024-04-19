@@ -20,21 +20,21 @@ export default class Socket {
     const port = 53318
 
     const onMessage = (msg, rinfo) => {
-      // console.log(`Received message from ${rinfo.address}:${rinfo.port}: ${msg}`)
+      let mqttServerInfo = null
       try {
         const message = JSON.parse(msg.toString())
         if (message.appName !== 'iReady') return
-        const mqttServerInfo = {
+         mqttServerInfo = {
           address: rinfo.address,
           port: message.mqttServerPort
         }
-
-        console.log(mqttServerInfo)
-
-        Socket.emitter.emit('MqttServerInfoCollectedEvent', mqttServerInfo)
       } catch (e) {
-        console.error('message反序列化失败 \n', e, '\n')
+        console.log("message反序列化失败");
+        return
       }
+
+      Socket.emitter.emit('MqttServerInfoCollectedEvent', mqttServerInfo)
+
     }
     const onError = (err) => {
       console.log(err)
@@ -44,9 +44,10 @@ export default class Socket {
   }
 
   static handleMqttServerInfoCollectedEvent(e) {
+
+
     if (Socket.connected) return
 
-    console.log('MqttServerInfoCollectedEvent', e)
 
     try {
       const options = {
@@ -67,19 +68,21 @@ export default class Socket {
     }
 
     Socket.client.on('connect', async () => {
+      console.log(`连接 MQTTServer: ${e.address}:${e.port} 成功`);
       // 订阅主题
       const themes = global.themes()
       for (const key in themes) {
         Socket.client.subscribe(themes[key])
       }
-      // 设置设备
+       
       await Socket.registerStateMessage()
+      await Socket.registerAliasMessage()
     })
 
     Socket.client.on('message', (topic, message) => MessageHandler.handle(topic, message))
 
     Socket.client.on('close', function () {
-      console.log('Connection closed')
+      console.log(`MQTTServer(${e.address}:${e.port}) 连接断开...`)
       Socket.client.end()
       Socket.connected = false
       Socket.client = null
@@ -88,6 +91,10 @@ export default class Socket {
     Socket.connected = true
   }
 
+  /**
+   * 注册设备
+   * @returns void 
+   */
   static registerStateMessage() {
     if (!Socket.connected) return
     const { state } = global.themes()
@@ -142,7 +149,7 @@ class Multicast {
         interfaces[ifname].forEach((iface) => {
           if (iface.family === 'IPv4' && !iface.internal) {
             socket.addMembership(this.multicastAddress, iface.address)
-            console.log(this.multicastAddress, iface.address)
+            console.log("网卡:", iface.address,'加入组播',this.multicastAddress)
           }
         })
       })
@@ -158,5 +165,3 @@ class Multicast {
     })
   }
 }
-
-// Socket.init()

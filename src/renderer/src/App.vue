@@ -16,6 +16,8 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
+import { ElMessage } from 'element-plus'
+
 import SettingDialog from './components/SettingDialog.vue'
 import SettingButton from './components/SettingButton.vue'
 
@@ -66,6 +68,16 @@ onMounted(async () => {
   })
 
   await testAndRunUrl()
+
+  window.electron.ipcRenderer.on('message', (event, text)=>{
+    ElMessage.success(text)
+  })
+
+
+  window.electron.ipcRenderer.on('reload', async (event, text)=>{
+    await testAndRunUrl()
+  })
+
 })
 </script>
 

@@ -4,7 +4,7 @@ import { createWindow } from './windows'
 import './ipc'
 import global from './global'
 
-import './socket'
+import socket from './socket'
 
 // 防止应用重复启动
 // const lock = app.requestSingleInstanceLock({
@@ -14,6 +14,8 @@ import './socket'
 // if (!lock) {
 //   return
 // }
+
+socket.init()
 
 global.ensureInitialized()
 

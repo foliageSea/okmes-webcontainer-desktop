@@ -1,6 +1,6 @@
-import { isEmpty, isNil } from 'lodash'
+import { isEmpty, isNil,cloneDeep } from 'lodash'
 import global from './global'
-import Socket from './socket'
+import socket from './socket'
 
 /**
  * 状态消息的状态
@@ -42,6 +42,10 @@ export class MessageHandler {
       case MessageActions.rename:
         MessageHandler.handleRenameMessage(topic, msg)
         break
+
+      case MessageActions.command:
+        MessageHandler.handleCommandMessage(topic, msg)
+        break
     }
   }
 
@@ -50,9 +54,29 @@ export class MessageHandler {
     switch (state) {
       case StateMessageState.sync:
         // 同步状态消息
-        global.handleStateMessageStateSync(topic, msg)
+        MessageHandler.handleStateMessageStateSync(topic, msg)
         break
     }
+  }
+
+
+  static handleStateMessageStateSync(topic, msg) {
+
+    global.stateMessage = cloneDeep(msg);
+    const { properties } = global.stateMessage;
+
+    properties.forEach(async (a) => {
+      switch (a.property) {
+        case "url":
+          global.config.url = a.value;
+          global.saveConfig();
+          await socket.registerStateMessage();
+          MessageHandler.message('同步配置成功')
+          break;
+      }
+    });
+
+
   }
 
   static handleDebugCallBackMessage() {}
@@ -60,9 +84,27 @@ export class MessageHandler {
   static handleRenameMessage(topic, msg) {
     const { alias } = msg
     if (isNil(alias)) return
-    if (alias === global.globalConfig.alias) return
-    global.globalConfig.alias = alias
-    global.saveGlobalConfig()
-    Socket.registerAliasMessage()
+    if (alias === global.config.alias) return
+    global.config.alias = alias
+    global.saveConfig()
+    socket.registerAliasMessage()
+  }
+
+  static handleCommandMessage(topic, msg) {
+    console.log(topic, msg);
+
+    const { command } = msg
+    switch(command) {
+      case 'reload':
+        global.mainWindow.webContents.send('reload')
+        MessageHandler.message('刷新网页成功')
+        break;
+    }
+
+  }
+
+
+  static message(msg) {
+    global.mainWindow.webContents.send('message',msg)
   }
 }

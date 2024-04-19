@@ -3,13 +3,11 @@ import { LocalStorage } from 'node-localstorage'
 
 import { StateMessageState, MessageActions } from './message_handler'
 
-import { machineIdSync } from 'node-machine-id'
-
-export default class GlobalController {
+export default class $ {
   static localStorage = new LocalStorage('./config')
   static mainWindow = null
   static config = {
-    id: 0,
+    id: 1,
     type: 'WebContainer',
     alias: '苹果',
     url: 'https://www.baidu.com'
@@ -21,7 +19,7 @@ export default class GlobalController {
     properties: [
       {
         property: 'url',
-        value: GlobalController.config.url,
+        value: $.config.url,
         valueType: 'String',
         regex: ''
       }
@@ -43,7 +41,7 @@ export default class GlobalController {
   }
 
   static themes() {
-    const { type, id } = GlobalController.config
+    const { type, id } = $.config
     return {
       state: `${type}/${MessageActions.state}/${id}`,
       debug: `${type}/${MessageActions.debug}/${id}`,
@@ -53,26 +51,22 @@ export default class GlobalController {
   }
 
   static saveConfig() {
-    GlobalController.localStorage.setItem('config', JSON.stringify(GlobalController.config))
+    $.localStorage.setItem('config', JSON.stringify($.config))
   }
 
   static _initConfig(k, v) {
-    if (!GlobalController.localStorage._keys.includes(k)) {
-      v.id = uniqueId()
-
-      GlobalController.localStorage.setItem(k, JSON.stringify(v))
+    if (!$.localStorage._keys.includes(k)) {
+      $.localStorage.setItem(k, JSON.stringify(v))
       return
     }
 
-    let data = GlobalController.localStorage.getItem(k)
+    let data = $.localStorage.getItem(k)
     if (isNil(data)) return
 
-    GlobalController.config = JSON.parse(data)
+    $.config = JSON.parse(data)
   }
 
   static ensureInitialized() {
-    GlobalController._initConfig('config', GlobalController.config)
-
-    console.log(machineIdSync())
+    $._initConfig('config', $.config)
   }
 }
