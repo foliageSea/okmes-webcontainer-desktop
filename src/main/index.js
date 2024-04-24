@@ -3,7 +3,6 @@ import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { createWindow } from './windows'
 import './ipc'
 import global from './global'
-
 import socket from './socket'
 
 // 防止应用重复启动
@@ -32,6 +31,17 @@ app.whenReady().then(() => {
 
   createWindow()
 })
+
+// 开机自启
+if (import.meta.env.MODE !== 'development') {
+  app.setLoginItemSettings({
+    openAtLogin: true,
+    openAsHidden: false
+  })
+}
+
+const options = app.getLoginItemSettings()
+console.log(options)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
