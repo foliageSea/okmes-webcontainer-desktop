@@ -120,6 +120,7 @@ export default class $ {
 
     try {
       $.client.publish(state, JSON.stringify(global.stateMessage), true)
+      console.log('[registerStateMessage]', global.stateMessage)
     } catch (e) {
       console.error(e)
     }
@@ -131,6 +132,7 @@ export default class $ {
     global.renameMessage.alias = global.config.alias
     try {
       $.client.publish(rename, JSON.stringify(global.renameMessage), true)
+      console.log('[registerAliasMessage]', global.renameMessage)
     } catch (e) {
       console.error(e)
     }

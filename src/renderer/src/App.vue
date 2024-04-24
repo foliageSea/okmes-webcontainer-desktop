@@ -11,6 +11,11 @@
 
     <webview id="webview" class="w-full h-full" />
     <SettingDialog ref="dialog" @reload="onReload" />
+    <DebugPage
+      v-if="showDebugPage"
+      :bg-color="debugPageColor"
+      class="pos-absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]"
+    ></DebugPage>
   </div>
 </template>
 
@@ -20,11 +25,18 @@ import { ElMessage } from 'element-plus'
 
 import SettingDialog from './components/SettingDialog.vue'
 import SettingButton from './components/SettingButton.vue'
+import DebugPage from './components/DebugPage.vue'
+import { useGlobalStore } from '@renderer/stores/global.js'
 
 const loading = ref(false)
 const loadingText = ref('')
 
+const showDebugPage = ref(false)
+const debugPageColor = ref('#ffffff')
+
 const dialog = ref(null)
+
+const { getConfig } = useGlobalStore()
 
 const onReload = async () => {
   await testAndRunUrl()
@@ -50,14 +62,14 @@ const testAndRunUrl = async () => {
 
   if (flag) {
     loading.value = false
-    webview.src = config.url
+    webview.src = url
   } else {
     loading.value = true
     loadingText.value = '加载失败'
   }
 }
 
-onMounted(async () => {
+const initWebview = () => {
   webview.addEventListener('did-fail-load', (event) => {
     console.log('did-fail-load', event)
     handleFailLoadEvent(event)
@@ -66,18 +78,37 @@ onMounted(async () => {
   webview.addEventListener('did-finish-load', (event) => {
     console.log('did-finish-load', event)
   })
+}
 
-  await testAndRunUrl()
-
-  window.electron.ipcRenderer.on('message', (event, text)=>{
+const initIpcRender = () => {
+  window.electron.ipcRenderer.on('message', (event, text) => {
     ElMessage.success(text)
   })
 
+  window.electron.ipcRenderer.on('debugMessage', (event, data) => {
+    console.log(data)
+    const { openDebugPage, debugColor } = data
 
-  window.electron.ipcRenderer.on('reload', async (event, text)=>{
-    await testAndRunUrl()
+    if (openDebugPage) {
+      showDebugPage.value = true
+      debugPageColor.value = debugColor
+    } else {
+      showDebugPage.value = false
+    }
   })
 
+  window.electron.ipcRenderer.on('reload', async () => {
+    await testAndRunUrl()
+  })
+  window.electron.ipcRenderer.on('refreshConfig', async () => {
+    await getConfig()
+  })
+}
+
+onMounted(async () => {
+  initWebview()
+  await testAndRunUrl()
+  initIpcRender()
 })
 </script>
 

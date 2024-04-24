@@ -1,6 +1,7 @@
-import { isEmpty, isNil,cloneDeep } from 'lodash'
+import { isEmpty, isNil, cloneDeep } from 'lodash'
 import global from './global'
 import socket from './socket'
+import { ipcMain } from 'electron'
 
 /**
  * 状态消息的状态
@@ -36,13 +37,12 @@ export class MessageHandler {
       case MessageActions.state:
         MessageHandler.handleStateMessage(topic, msg)
         break
-      case MessageActions.debugCallback:
-        MessageHandler.handleDebugCallBackMessage()
+      case MessageActions.debug:
+        MessageHandler.handleDebugMessage(topic, msg)
         break
       case MessageActions.rename:
         MessageHandler.handleRenameMessage(topic, msg)
         break
-
       case MessageActions.command:
         MessageHandler.handleCommandMessage(topic, msg)
         break
@@ -59,27 +59,26 @@ export class MessageHandler {
     }
   }
 
-
   static handleStateMessageStateSync(topic, msg) {
-
-    global.stateMessage = cloneDeep(msg);
-    const { properties } = global.stateMessage;
+    global.stateMessage = cloneDeep(msg)
+    const { properties } = global.stateMessage
 
     properties.forEach(async (a) => {
       switch (a.property) {
-        case "url":
-          global.config.url = a.value;
-          global.saveConfig();
-          await socket.registerStateMessage();
+        case 'url':
+          global.config.url = a.value
+          global.saveConfig()
+          await socket.registerStateMessage()
           MessageHandler.message('同步配置成功')
-          break;
+          global.mainWindow.webContents.send('refreshConfig')
+          break
       }
-    });
-
-
+    })
   }
 
-  static handleDebugCallBackMessage() {}
+  static handleDebugMessage(topic, msg) {
+    global.mainWindow.webContents.send('debugMessage', msg)
+  }
 
   static handleRenameMessage(topic, msg) {
     const { alias } = msg
@@ -91,20 +90,18 @@ export class MessageHandler {
   }
 
   static handleCommandMessage(topic, msg) {
-    console.log(topic, msg);
+    console.log(topic, msg)
 
     const { command } = msg
-    switch(command) {
+    switch (command) {
       case 'reload':
         global.mainWindow.webContents.send('reload')
         MessageHandler.message('刷新网页成功')
-        break;
+        break
     }
-
   }
 
-
   static message(msg) {
-    global.mainWindow.webContents.send('message',msg)
+    global.mainWindow.webContents.send('message', msg)
   }
 }
