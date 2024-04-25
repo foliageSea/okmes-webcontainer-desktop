@@ -4,7 +4,7 @@ import { LocalStorage } from 'node-localstorage'
 import { StateMessageState, MessageActions } from './message_handler'
 import { Snowflake, getRandomAlias } from './util'
 
-export default class $ {
+export default class controller {
   static localStorage = new LocalStorage('./config')
   static mainWindow = null
   static config = {
@@ -20,7 +20,7 @@ export default class $ {
     properties: [
       {
         property: 'url',
-        value: $.config.url,
+        value: controller.config.url,
         valueType: 'String',
         regex: ''
       }
@@ -45,7 +45,7 @@ export default class $ {
   }
 
   static themes() {
-    const { type, id } = $.config
+    const { type, id } = controller.config
     return {
       state: `${type}/${MessageActions.state}/${id}`,
       debug: `${type}/${MessageActions.debug}/${id}`,
@@ -55,31 +55,31 @@ export default class $ {
   }
 
   static saveConfig() {
-    $.localStorage.setItem('config', JSON.stringify($.config))
+    controller.localStorage.setItem('config', JSON.stringify(controller.config))
   }
 
   static _initConfig(k, v) {
-    if (!$.localStorage._keys.includes(k)) {
-      $.config.id = +new Snowflake(1, 1).generate()
-      $.config.alias = getRandomAlias()
-      $.localStorage.setItem(k, JSON.stringify(v))
+    if (!controller.localStorage._keys.includes(k)) {
+      controller.config.id = +new Snowflake(1, 1).generate()
+      controller.config.alias = getRandomAlias()
+      controller.localStorage.setItem(k, JSON.stringify(v))
       return
     }
 
-    let data = $.localStorage.getItem(k)
+    let data = controller.localStorage.getItem(k)
     if (isNil(data)) return
 
     try {
-      $.config = JSON.parse(data)
+      controller.config = JSON.parse(data)
     } catch (e) {
-      $.config.id = +new Snowflake(1, 1).generate()
+      controller.config.id = +new Snowflake(1, 1).generate()
 
-      $.config.alias = getRandomAlias()
-      $.localStorage.setItem(k, JSON.stringify(v))
+      controller.config.alias = getRandomAlias()
+      controller.localStorage.setItem(k, JSON.stringify(v))
     }
   }
 
   static ensureInitialized() {
-    $._initConfig('config', $.config)
+    controller._initConfig('config', controller.config)
   }
 }

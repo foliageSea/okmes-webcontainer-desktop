@@ -2,6 +2,7 @@
 require('@rushstack/eslint-patch/modern-module-resolution')
 
 module.exports = {
+  parser: '@babel/eslint-parser',
   extends: [
     'eslint:recommended',
     'plugin:vue/vue3-recommended',

@@ -29,9 +29,11 @@
     "mqtt": "^5.4.0",
     "node-localstorage": "^3.0.5",
     "node-notifier": "^10.0.1",
+    "nprogress": "^0.2.0",
     "pinia": "^2.1.7"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.24.1",
     "@electron-toolkit/eslint-config": "^1.0.1",
     "@rushstack/eslint-patch": "^1.6.1",
     "@unocss/preset-attributify": "^0.59.2",

@@ -33,7 +33,7 @@ export default defineConfig({
       }
     },
     plugins: [
-      // VueDevTools(),
+      VueDevTools(),
       vue(),
       Unocss({
         presets: [presetUno(), presetAttributify()]

@@ -1,14 +1,15 @@
 <template>
-  <button class="button" @click="props.onClick">
+  <button class="button" @click="emit('click')">
     <span class="button-content">{{ props.title }}</span>
   </button>
 </template>
 
 <script setup>
 const props = defineProps({
-  title: String,
-  onClick: Function
+  title: String
 })
+
+const emit = defineEmits(['click'])
 </script>
 
 <style scoped>

@@ -1,7 +1,6 @@
 import { BrowserWindow, shell } from 'electron'
 import { is } from '@electron-toolkit/utils'
 import { join } from 'path'
-import { isNil } from 'lodash'
 
 import global from './global'
 
@@ -19,15 +18,17 @@ export function createWindow() {
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
-      webSecurity: false,
+      webSecurity: true,
       webviewTag: true
     },
-    fullscreen: import.meta.env.MODE !== 'development'
+    fullscreen: import.meta.env.MODE !== 'development',
+    closable: false
   })
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     mainWindow.setTitle('OkMes-WebContainer')
+    // mainWindow.webContents.openDevTools()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
