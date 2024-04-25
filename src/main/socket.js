@@ -7,14 +7,17 @@ import os from 'os'
 import global from './global'
 import { MessageHandler, StateMessageState } from './message_handler'
 
-export default class $ {
+export default class controller {
   static emitter = mitt()
   static connected = false
   static client = null
   static multicast = null
 
   static init() {
-    $.emitter.on('MqttServerInfoCollectedEvent', $.handleMqttServerInfoCollectedEvent)
+    controller.emitter.on(
+      'MqttServerInfoCollectedEvent',
+      controller.handleMqttServerInfoCollectedEvent
+    )
 
     // 组播地址和端口
     const multicastAddress = '224.0.0.167'
@@ -34,18 +37,18 @@ export default class $ {
         return
       }
 
-      $.emitter.emit('MqttServerInfoCollectedEvent', mqttServerInfo)
+      controller.emitter.emit('MqttServerInfoCollectedEvent', mqttServerInfo)
     }
     const onError = (err) => {
       console.log(err)
     }
 
-    $.multicast = new Multicast(multicastAddress, port, onMessage, onError)
-    $.multicast.init()
+    controller.multicast = new Multicast(multicastAddress, port, onMessage, onError)
+    controller.multicast.init()
   }
 
   static handleMqttServerInfoCollectedEvent(e) {
-    if ($.connected) return
+    if (controller.connected) return
 
     try {
       const options = {
@@ -57,36 +60,36 @@ export default class $ {
           retain: true
         }
       }
-      $.client = mqtt.connect(`mqtt://${e.address}:${e.port}`, options)
+      controller.client = mqtt.connect(`mqtt://${e.address}:${e.port}`, options)
     } catch (e) {
       console.log('连接 MQTTServer 失败', e)
-      $.connected = false
-      $.client = null
+      controller.connected = false
+      controller.client = null
       return
     }
 
-    $.client.on('connect', async () => {
+    controller.client.on('connect', async () => {
       console.log(`连接 MQTTServer: ${e.address}:${e.port} 成功`)
       // 订阅主题
       const themes = global.themes()
       for (const key in themes) {
-        $.client.subscribe(themes[key])
+        controller.client.subscribe(themes[key])
       }
 
-      await $.registerStateMessage()
-      await $.registerAliasMessage()
+      await controller.registerStateMessage()
+      await controller.registerAliasMessage()
     })
 
-    $.client.on('message', (topic, message) => MessageHandler.handle(topic, message))
+    controller.client.on('message', (topic, message) => MessageHandler.handle(topic, message))
 
-    $.client.on('close', function () {
+    controller.client.on('close', function () {
       console.log(`MQTTServer(${e.address}:${e.port}) 连接断开...`)
-      $.client.end()
-      $.connected = false
-      $.client = null
+      controller.client.end()
+      controller.connected = false
+      controller.client = null
     })
 
-    $.connected = true
+    controller.connected = true
   }
 
   /**
@@ -94,7 +97,7 @@ export default class $ {
    * @returns void
    */
   static registerStateMessage() {
-    if (!$.connected) return
+    if (!controller.connected) return
     const { state } = global.themes()
 
     global.stateMessage.state = StateMessageState.online
@@ -103,7 +106,7 @@ export default class $ {
       item.value = global.config.url
     }
 
-    const host = $.multicast.getLocalIP()
+    const host = controller.multicast.getLocalIP()
     console.log('本机IP', host)
     if (!isNil(host)) {
       global.stateMessage.hardware.networkInterface = []
@@ -119,7 +122,7 @@ export default class $ {
     }
 
     try {
-      $.client.publish(state, JSON.stringify(global.stateMessage), true)
+      controller.client.publish(state, JSON.stringify(global.stateMessage), true)
       console.log('[registerStateMessage]', global.stateMessage)
     } catch (e) {
       console.error(e)
@@ -127,11 +130,11 @@ export default class $ {
   }
 
   static registerAliasMessage() {
-    if (!$.connected) return
+    if (!controller.connected) return
     const { rename } = global.themes()
     global.renameMessage.alias = global.config.alias
     try {
-      $.client.publish(rename, JSON.stringify(global.renameMessage), true)
+      controller.client.publish(rename, JSON.stringify(global.renameMessage), true)
       console.log('[registerAliasMessage]', global.renameMessage)
     } catch (e) {
       console.error(e)
