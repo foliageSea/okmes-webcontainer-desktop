@@ -14,6 +14,18 @@ const api = {
   },
   async testUrl(url) {
     return await ipcRenderer.invoke('testUrl', url)
+  },
+  async getCreationTime() {
+    return await ipcRenderer.invoke('getCreationTime')
+  },
+  async getCPUUsage() {
+    return await ipcRenderer.invoke('getCPUUsage')
+  },
+  async getProcessMemoryInfo() {
+    return await ipcRenderer.invoke('getProcessMemoryInfo')
+  },
+  async getSystemMemoryInfo() {
+    return await ipcRenderer.invoke('getSystemMemoryInfo')
   }
 }
 

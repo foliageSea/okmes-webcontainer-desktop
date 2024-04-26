@@ -1,6 +1,8 @@
 import { app, ipcMain } from 'electron'
-import global from './global'
 import axios from 'axios'
+import si from 'systeminformation'
+
+import global from './global'
 
 ipcMain.on('ping', () => console.log('pong'))
 
@@ -25,3 +27,26 @@ ipcMain.handle('testUrl', async (_, url) => {
 })
 
 ipcMain.handle('exit', () => app.exit())
+
+/** 获取应用程序的创建时间 */
+ipcMain.handle('getCreationTime', () => {
+  return process.getCreationTime()
+})
+
+ipcMain.handle('getCPUUsage', async () => {
+  const data = await si.currentLoad()
+  let totalUsage = 0
+  data.cpus.forEach((cpu) => {
+    totalUsage += cpu.load
+  })
+  const averageUsage = totalUsage / data.cpus.length
+  return averageUsage
+})
+
+ipcMain.handle('getProcessMemoryInfo', () => {
+  return process.getProcessMemoryInfo()
+})
+
+ipcMain.handle('getSystemMemoryInfo', () => {
+  return process.getSystemMemoryInfo()
+})

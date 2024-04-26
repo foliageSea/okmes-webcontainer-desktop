@@ -16,16 +16,20 @@
       :bg-color="debugPageColor"
       class="pos-absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]"
     ></DebugPage>
+
+    <Monitor v-if="enableMonitorl" class="pos-absolute left-0 top-0" />
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, toRef } from 'vue'
 import { ElMessage } from 'element-plus'
 
 import SettingDialog from './components/SettingDialog.vue'
 import SettingButton from './components/SettingButton.vue'
 import DebugPage from './components/DebugPage.vue'
+import Monitor from './components/Monitor.vue'
+
 import { useGlobalStore } from '@renderer/stores/global.js'
 import { isNil } from 'lodash'
 
@@ -40,6 +44,9 @@ const dialog = ref(null)
 let el = null
 
 const { getConfig } = useGlobalStore()
+const global = useGlobalStore()
+
+const enableMonitorl = toRef(global, 'enableMonitorl')
 
 const onReload = async () => {
   await testAndRunUrl()
@@ -109,11 +116,9 @@ onMounted(async () => {
   if (isNil(el)) {
     loading.value = true
     loadingText.value = 'WebView 加载失败, 3秒后重试'
-
     setTimeout(() => {
       location.reload()
     }, 3 * 1000)
-
     return
   }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onBeforeMount } from 'vue'
+import { reactive, onBeforeMount, toRef } from 'vue'
 import { useGlobalStore } from '@renderer/stores/global.js'
 
 const props = defineProps({
@@ -9,7 +9,8 @@ const props = defineProps({
   }
 })
 
-const { config, getConfig } = useGlobalStore()
+const global = useGlobalStore()
+const config = toRef(global, 'config')
 
 const versions = reactive({ ...window.electron.process.versions })
 
@@ -35,7 +36,7 @@ const calculateContrastColor = (hexColor) => {
 }
 
 onBeforeMount(async () => {
-  await getConfig()
+  await global.getConfig()
 })
 </script>
 

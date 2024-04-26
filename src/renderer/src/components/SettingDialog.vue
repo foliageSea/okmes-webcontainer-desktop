@@ -8,6 +8,8 @@
 
     <template #footer>
       <div class="dialog-footer">
+        <el-button @click="onDevTool">DevTool</el-button>
+        <el-button @click="onMonitorl">性能监控</el-button>
         <el-button @click="onTestUrl">测试网址</el-button>
         <el-button @click="visible = false">取消</el-button>
         <el-button type="primary" @click="onSubmit">确认</el-button>
@@ -17,13 +19,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, toRef } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useGlobalStore } from '@renderer/stores/global.js'
+
+const global = useGlobalStore()
+
+const enableMonitorl = toRef(global, 'enableMonitorl')
 
 const visible = ref(false)
 const form = ref({
   url: ''
 })
+
+let el = null
 
 const emit = defineEmits(['reload'])
 
@@ -38,7 +47,7 @@ defineExpose({
 const onSubmit = async () => {
   await window.api.updateConfig({ ...form.value })
 
-  emit('reload')
+  el.reload()
 
   visible.value = false
 }
@@ -52,6 +61,18 @@ const onTestUrl = async () => {
     ElMessage.error('未通过')
   }
 }
+
+const onDevTool = () => {
+  el.openDevTools()
+}
+
+const onMonitorl = () => {
+  enableMonitorl.value = !enableMonitorl.value
+}
+
+onMounted(() => {
+  el = document.querySelector('.inner-web')
+})
 </script>
 
 <style scoped></style>

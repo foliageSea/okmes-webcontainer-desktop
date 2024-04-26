@@ -33,15 +33,14 @@ app.whenReady().then(() => {
 })
 
 // 开机自启
-if (import.meta.env.MODE !== 'development') {
-  app.setLoginItemSettings({
-    openAtLogin: true,
-    openAsHidden: false
-  })
-}
+// if (import.meta.env.MODE !== 'development') {
+//   app.setLoginItemSettings({
+//     openAtLogin: true
+//   })
+// }
 
-const options = app.getLoginItemSettings()
-console.log(options)
+// const options = app.getLoginItemSettings()
+// console.log(options)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

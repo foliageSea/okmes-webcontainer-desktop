@@ -3,7 +3,7 @@
   "version": "0.0.4",
   "description": "OkMes WebContainer",
   "main": "./out/main/index.js",
-  "author": "example.com",
+  "author": "sunpn",
   "homepage": "https://electron-vite.org",
   "scripts": {
     "format": "prettier --write .",
@@ -20,6 +20,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
+    "@element-plus/icons-vue": "^2.3.1",
     "@unocss/vite": "^0.59.2",
     "axios": "^1.6.8",
     "electron-updater": "^6.1.7",
@@ -30,7 +31,8 @@
     "node-localstorage": "^3.0.5",
     "node-notifier": "^10.0.1",
     "nprogress": "^0.2.0",
-    "pinia": "^2.1.7"
+    "pinia": "^2.1.7",
+    "systeminformation": "^5.22.7"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.24.1",

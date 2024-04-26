@@ -34,6 +34,11 @@ const onExit = async () => {
   window.api.exit()
 }
 
+const onTest = async () => {
+  const info = await window.api.getSystemVersion()
+  console.log(info)
+}
+
 onMounted(() => {
   el = document.querySelector('.inner-web')
 })
