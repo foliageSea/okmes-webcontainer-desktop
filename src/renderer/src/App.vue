@@ -9,7 +9,7 @@
       class="pos-absolute w-auto right-1 bottom-1 opacity-0 hover:opacity-100 z-9999"
     />
 
-    <webview class="w-full h-full inner-web" />
+    <webview class="w-full h-full inner-web" disablewebsecurity />
     <SettingDialog ref="dialog" @reload="onReload" />
     <DebugPage
       v-if="showDebugPage"

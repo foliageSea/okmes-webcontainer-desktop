@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, toRef, onMounted, computed } from 'vue'
+import { ref, toRef, onMounted, computed, onBeforeUnmount } from 'vue'
 import { useGlobalStore } from '@renderer/stores/global.js'
 import { isNil } from 'lodash'
 
@@ -44,6 +44,8 @@ const processMemoryInfo = toRef(global, 'processMemoryInfo')
 const systemMemoryInfo = toRef(global, 'systemMemoryInfo')
 
 const runningTime = ref(0)
+
+let timer = null
 
 const calSystemMemoryUsage = computed(() => {
   const { total, free } = systemMemoryInfo.value
@@ -68,7 +70,7 @@ const initRunningTime = async () => {
 }
 
 const initProcessInfo = () => {
-  setInterval(async () => {
+  timer = setInterval(async () => {
     cpuUsage.value = await window.api.getCPUUsage()
     processMemoryInfo.value = await window.api.getProcessMemoryInfo()
     systemMemoryInfo.value = await window.api.getSystemMemoryInfo()
@@ -78,6 +80,10 @@ const initProcessInfo = () => {
 onMounted(async () => {
   initRunningTime()
   initProcessInfo()
+})
+
+onBeforeUnmount(() => {
+  clearInterval(timer)
 })
 </script>
 
