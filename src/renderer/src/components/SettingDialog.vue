@@ -34,7 +34,7 @@ const form = ref({
 
 let el = null
 
-const emit = defineEmits(['reload'])
+const emits = defineEmits(['reload'])
 
 defineExpose({
   async open() {
@@ -47,7 +47,7 @@ defineExpose({
 const onSubmit = async () => {
   await window.api.updateConfig({ ...form.value })
 
-  el.reload()
+  emits('reload')
 
   visible.value = false
 }
