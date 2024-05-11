@@ -56,9 +56,9 @@ const onTestUrl = async () => {
   const flag = await window.api.testUrl(form.value.url)
 
   if (flag) {
-    ElMessage.success('通过')
+    ElMessage.success({ message: '通过', grouping: true })
   } else {
-    ElMessage.error('未通过')
+    ElMessage.error({ message: '未通过', grouping: true })
   }
 }
 

@@ -46,6 +46,7 @@ const systemMemoryInfo = toRef(global, 'systemMemoryInfo')
 const runningTime = ref(0)
 
 let timer = null
+let clock = null
 
 const calSystemMemoryUsage = computed(() => {
   const { total, free } = systemMemoryInfo.value
@@ -62,7 +63,7 @@ const calProcessMemoryUsage = computed(() => {
 
 const initRunningTime = async () => {
   creationTime.value = await window.api.getCreationTime()
-  setInterval(() => {
+  clock = setInterval(() => {
     if (!isNil(creationTime.value)) {
       runningTime.value = Number.parseInt((Date.now() - creationTime.value) / 1000)
     }
@@ -84,6 +85,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   clearInterval(timer)
+  clearInterval(clock)
 })
 </script>
 

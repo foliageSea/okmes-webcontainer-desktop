@@ -22,7 +22,7 @@ const onBack = () => {
 
 const onReload = () => {
   el.reload()
-  ElMessage.success('刷新成功')
+  ElMessage.success({ message: '刷新成功', grouping: true })
 }
 
 const onSetting = () => {
