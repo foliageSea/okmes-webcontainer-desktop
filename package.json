@@ -1,6 +1,6 @@
 {
   "name": "okmes-webcontainer-desktop",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "OkMes WebContainer",
   "main": "./out/main/index.js",
   "author": "sunpn",
