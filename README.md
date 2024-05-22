@@ -37,3 +37,9 @@ sudo dpkg -l | grep *
 # 卸载
 sudo dpkg -r *
 ```
+
+### 快速安装
+
+```bash
+curl -sSL https://gitee.com/sunpn/okmesh-webcontainer-linux/raw/main/scripts/install.sh -o install.sh && sudo bash install.sh
+```

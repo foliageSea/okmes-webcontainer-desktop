@@ -1,13 +1,41 @@
-#!/bin/bash
+version="0.0.7"
+url="https://gitee.com/sunpn/okmesh-webcontainer-linux/releases/download/v${version}/okmes-webcontainer-desktop_${version}_arm64.deb"
 
-APP_NAME="okmes-webcontainer-desktop"
 
-VERSION="0.0.6"
+echo "📡 正在下载安装包... ${url}"
+curl -L -o install.deb "${url}"
+if [ $? -ne 0 ]; then
+    echo "下载失败"
+    exit 1
+fi
 
-DOWNLOAD_URL="https://gitee.com/sunpn/okmesh-webcontainer-linux/releases/download/v${VERSION}/okmes-webcontainer-desktop_${VERSION}_arm64.deb"
+# 检查下载的文件是否存在且非空
+if [ ! -s install.deb ]; then
+    echo "下载的文件不存在或为空"
+    exit 1
+fi
 
-echo "下载安装包"
+echo "📦 正在安装..."
+sudo dpkg -i install.deb
+if [ $? -ne 0 ]; then
+    echo "安装失败，尝试修复依赖..."
+    sudo apt-get install -f -y
+    if [ $? -ne 0 ]; then
+        echo "修复依赖失败"
+        exit 1
+    fi
+    # 再次尝试安装
+    sudo dpkg -i install.deb
+    if [ $? -ne 0 ]; then
+        echo "安装仍然失败"
+        exit 1
+    fi
+fi
 
-curl -sSL ${DOWNLOAD_URL} -o ${APP_NAME}.deb && sudo dpkg -i ${APP_NAME}.deb
-
-sudo /opt/OkMes-WebContainer/${APP_NAME}
+echo "🚀 正在启动..."
+if [ -x "/opt/OkMes-WebContainer/okmes-webcontainer-desktop" ]; then
+    /opt/OkMes-WebContainer/okmes-webcontainer-desktop --no-sandbox
+else
+    echo "启动文件不存在或不可执行"
+    exit 1
+fi
