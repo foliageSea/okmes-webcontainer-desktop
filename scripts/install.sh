@@ -8,6 +8,6 @@ DOWNLOAD_URL="https://gitee.com/sunpn/okmesh-webcontainer-linux/releases/downloa
 
 echo "下载安装包"
 
-curl -L -o ${APP_NAME}.deb $DOWNLOAD_URL | sudo dpkg -i ${APP_NAME}.deb 
+curl -sSL ${DOWNLOAD_URL} -o ${APP_NAME}.deb && sudo dpkg -i ${APP_NAME}.deb
 
 sudo /opt/OkMes-WebContainer/${APP_NAME}
