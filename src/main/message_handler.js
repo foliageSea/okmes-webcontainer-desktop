@@ -68,7 +68,6 @@ export class MessageHandler {
         case 'url':
           global.config.url = a.value
           global.saveConfig()
-          await socket.registerStateMessage()
           MessageHandler.message('同步配置成功')
           global.mainWindow.webContents.send('refreshConfig')
           break
@@ -86,7 +85,6 @@ export class MessageHandler {
     if (alias === global.config.alias) return
     global.config.alias = alias
     global.saveConfig()
-    socket.registerAliasMessage()
   }
 
   static handleCommandMessage(topic, msg) {

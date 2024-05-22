@@ -77,7 +77,6 @@ export default class controller {
       }
 
       await controller.registerStateMessage()
-      await controller.registerAliasMessage()
     })
 
     controller.client.on('message', (topic, message) => MessageHandler.handle(topic, message))
@@ -121,21 +120,11 @@ export default class controller {
       })
     }
 
+    global.stateMessage.alias = global.config.alias
+
     try {
       controller.client.publish(state, JSON.stringify(global.stateMessage), true)
       console.log('[registerStateMessage]', global.stateMessage)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  static registerAliasMessage() {
-    if (!controller.connected) return
-    const { rename } = global.themes()
-    global.renameMessage.alias = global.config.alias
-    try {
-      controller.client.publish(rename, JSON.stringify(global.renameMessage), true)
-      console.log('[registerAliasMessage]', global.renameMessage)
     } catch (e) {
       console.error(e)
     }

@@ -29,18 +29,20 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 
+  // 开机自启
+  if (import.meta.env.MODE !== 'development') {
+    if (app.getLoginItemSettings().openAtLogin === false) {
+      app.setLoginItemSettings({
+        openAtLogin: true,
+        openAsHidden: false
+      })
+    }
+  }
+
   createWindow()
 })
 
-// 开机自启
-// if (import.meta.env.MODE !== 'development') {
-//   app.setLoginItemSettings({
-//     openAtLogin: true
-//   })
-// }
-
-// const options = app.getLoginItemSettings()
-// console.log(options)
+const options = console.log(options)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

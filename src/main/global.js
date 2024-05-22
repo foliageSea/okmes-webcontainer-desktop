@@ -27,21 +27,14 @@ export default class controller {
     ],
     hardware: {
       networkInterface: []
-    }
+    },
+    alias: controller.config.alias
   }
+
   static willStateMessage = {
     event: 'register',
     deviceType: 'DeskTop',
     state: StateMessageState.willOffline
-  }
-  static debugCallbackMessage = {
-    event: '',
-    debugId: '',
-    debugColor: ''
-  }
-  static renameMessage = {
-    event: 'rename',
-    alias: null
   }
 
   static themes() {
