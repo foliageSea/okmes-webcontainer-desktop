@@ -26,6 +26,11 @@ ipcMain.handle('testUrl', async (_, url) => {
   }
 })
 
+/** 最小化 */
+ipcMain.handle('minimize', () => {
+  global.mainWindow.minimize()
+})
+
 ipcMain.handle('exit', () => app.exit())
 
 /** 获取应用程序的创建时间 */

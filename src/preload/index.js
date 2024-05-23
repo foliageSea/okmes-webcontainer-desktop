@@ -9,6 +9,9 @@ const api = {
   updateConfig(config) {
     ipcRenderer.invoke('updateConfig', config)
   },
+  minimize() {
+    return ipcRenderer.invoke('minimize')
+  },
   exit() {
     return ipcRenderer.invoke('exit')
   },

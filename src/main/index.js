@@ -30,19 +30,17 @@ app.whenReady().then(() => {
   })
 
   // 开机自启
-  if (import.meta.env.MODE !== 'development') {
-    if (app.getLoginItemSettings().openAtLogin === false) {
-      app.setLoginItemSettings({
-        openAtLogin: true,
-        openAsHidden: false
-      })
-    }
-  }
+  // if (import.meta.env.MODE !== 'development') {
+  //   if (app.getLoginItemSettings().openAtLogin === false) {
+  //     app.setLoginItemSettings({
+  //       openAtLogin: true,
+  //       openAsHidden: false
+  //     })
+  //   }
+  // }
 
   createWindow()
 })
-
-const options = console.log(options)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

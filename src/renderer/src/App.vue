@@ -66,16 +66,17 @@ const handleFailLoadEvent = (event) => {
 
 const testAndRunUrl = async () => {
   const config = await window.api.getConfig()
-
   const url = config.url
   const flag = await window.api.testUrl(url)
-
   if (flag) {
     loading.value = false
     el.src = url
   } else {
     loading.value = true
-    loadingText.value = '加载失败'
+    loadingText.value = '加载失败(3秒后重试)'
+    setTimeout(async () => {
+      testAndRunUrl()
+    }, 3 * 1000)
   }
 }
 

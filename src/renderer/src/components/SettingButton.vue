@@ -3,6 +3,7 @@
     <Button class="mr-[4px]" title="返回" @click="onBack" />
     <Button class="mr-[4px]" title="刷新" @click="onReload" />
     <Button class="mr-[4px]" title="设置" @click="onSetting" />
+    <Button class="mr-[4px]" title="最小化" @click="onMinimize" />
     <Button class="mr-[4px]" title="退出" @click="onExit" />
   </div>
 </template>
@@ -27,6 +28,10 @@ const onReload = () => {
 
 const onSetting = () => {
   props.dialog.open()
+}
+
+const onMinimize = () => {
+  window.api.minimize()
 }
 
 const onExit = async () => {
