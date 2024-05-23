@@ -1,4 +1,4 @@
-version="0.0.8"
+version="0.0.9"
 url="https://gitee.com/sunpn/okmesh-webcontainer-linux/releases/download/v${version}/okmes-webcontainer-desktop_${version}_arm64.deb"
 
 
