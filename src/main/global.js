@@ -66,7 +66,6 @@ export default class controller {
       controller.config = JSON.parse(data)
     } catch (e) {
       controller.config.id = +new Snowflake(1, 1).generate()
-
       controller.config.alias = getRandomAlias()
       controller.localStorage.setItem(k, JSON.stringify(v))
     }

@@ -73,7 +73,7 @@ const testAndRunUrl = async () => {
     el.src = url
   } else {
     loading.value = true
-    loadingText.value = '加载失败(3秒后重试)'
+    loadingText.value = `加载失败(${url})`
     setTimeout(async () => {
       testAndRunUrl()
     }, 3 * 1000)

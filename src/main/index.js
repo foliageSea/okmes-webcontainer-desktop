@@ -3,7 +3,7 @@ import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { createWindow } from './windows'
 import './ipc'
 import global from './global'
-import socket from './socket'
+import Socket from './socket'
 
 // 防止应用重复启动
 // const lock = app.requestSingleInstanceLock({
@@ -14,9 +14,9 @@ import socket from './socket'
 //   return
 // }
 
-socket.init()
-
 global.ensureInitialized()
+
+// Socket.init()
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.sunpn')
@@ -30,14 +30,14 @@ app.whenReady().then(() => {
   })
 
   // 开机自启
-  if (import.meta.env.MODE !== 'development') {
-    if (app.getLoginItemSettings().openAtLogin === false) {
-      app.setLoginItemSettings({
-        openAtLogin: true,
-        openAsHidden: false
-      })
-    }
-  }
+  // if (import.meta.env.MODE !== 'development') {
+  //   if (app.getLoginItemSettings().openAtLogin === false) {
+  //     app.setLoginItemSettings({
+  //       openAtLogin: true,
+  //       openAsHidden: false
+  //     })
+  //   }
+  // }
 
   createWindow()
 })
