@@ -1,11 +1,12 @@
 import { isNil } from 'lodash'
 import { LocalStorage } from 'node-localstorage'
+import path from 'path'
 
 import { StateMessageState, MessageActions } from './message_handler'
 import { Snowflake, getRandomAlias } from './util'
 
 export default class controller {
-  static localStorage = new LocalStorage('./config')
+  static localStorage = new LocalStorage(path.join(process.cwd(), 'config'))
   static mainWindow = null
   static config = {
     id: 1,

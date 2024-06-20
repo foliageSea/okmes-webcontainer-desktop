@@ -32,6 +32,12 @@ export const useGlobalStore = defineStore('global', () => {
 
   const enableMonitorl = ref(false)
 
+  /**
+   * 容器刷新间隔 默认 60分钟
+   * @type {Ref<UnwrapRef<number>>}
+   */
+  const refreshInterval = ref(60)
+
   return {
     config,
     getConfig,
@@ -39,6 +45,9 @@ export const useGlobalStore = defineStore('global', () => {
     cpuUsage,
     processMemoryInfo,
     systemMemoryInfo,
-    enableMonitorl
+    enableMonitorl,
+    refreshInterval
   }
+}, {
+  persist: true
 })

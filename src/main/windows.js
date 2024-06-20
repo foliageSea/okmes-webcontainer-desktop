@@ -28,7 +28,9 @@ export function createWindow() {
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     mainWindow.setTitle('OkMes-WebContainer')
-    // mainWindow.webContents.openDevTools()
+    if (import.meta.env.MODE === 'development') {
+      mainWindow.webContents.openDevTools()
+    }
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

@@ -4,6 +4,19 @@
       <el-form-item label="网址">
         <el-input v-model="form.url" />
       </el-form-item>
+      <el-form-item label="刷新">
+        <el-select
+          v-model="form.refreshInterval"
+          style="width: 240px"
+        >
+          <el-option
+            v-for="item in refreshIntervalOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
     </el-form>
 
     <template #footer>
@@ -20,16 +33,21 @@
 
 <script setup>
 import { ref, onMounted, toRef } from 'vue'
+import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
 import { useGlobalStore } from '@renderer/stores/global.js'
 
+
 const global = useGlobalStore()
+
+const { refreshInterval } = storeToRefs(global)
 
 const enableMonitorl = toRef(global, 'enableMonitorl')
 
 const visible = ref(false)
 const form = ref({
-  url: ''
+  url: '',
+  refreshInterval: 0
 })
 
 let el = null
@@ -39,16 +57,42 @@ const emits = defineEmits(['reload'])
 defineExpose({
   async open() {
     const config = await window.api.getConfig()
-    form.value = config
+    form.value.url = config.url
+    form.value.refreshInterval = refreshInterval
     visible.value = true
   }
 })
 
+
+const refreshIntervalOptions = ref([
+  {
+    value: 1,
+    label: '1分钟'
+  },
+  {
+    value: 15,
+    label: '15分钟'
+  }, {
+    value: 30,
+    label: '30分钟'
+  }, {
+    value: 60,
+    label: '1小时'
+  }
+  , {
+    value: 120,
+    label: '2小时'
+  },
+  {
+    value: 720,
+    label: '12小时'
+  }
+])
+
 const onSubmit = async () => {
   await window.api.updateConfig({ ...form.value })
-
+  refreshInterval.value = form.value.refreshInterval
   emits('reload')
-
   visible.value = false
 }
 

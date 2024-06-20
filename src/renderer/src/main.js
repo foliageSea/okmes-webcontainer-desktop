@@ -8,10 +8,12 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
 import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 import App from './App.vue'
 
 const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 const app = createApp(App)
 app.use(pinia)
 app.use(ElementPlus, {

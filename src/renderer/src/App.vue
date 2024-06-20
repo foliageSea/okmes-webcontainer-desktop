@@ -22,7 +22,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref, toRef } from 'vue'
+import { onMounted, onBeforeUnmount, ref, toRef } from 'vue'
+import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
 
 import SettingDialog from './components/SettingDialog.vue'
@@ -43,13 +44,30 @@ const dialog = ref(null)
 
 let el = null
 
-const { getConfig } = useGlobalStore()
 const global = useGlobalStore()
+const { getConfig } = global
+const { refreshInterval } = storeToRefs(global)
 
 const enableMonitorl = toRef(global, 'enableMonitorl')
 
+
+let timer = null
+
+const startRefreshTimer = () => {
+  stopRefreshTimer()
+  timer = setInterval(() => {
+    ElMessage.success({ message: '定时刷新容器', grouping: true })
+    onReload()
+  }, refreshInterval.value * 60 * 1000) // 单位: 分钟
+}
+
+const stopRefreshTimer = () => {
+  clearInterval(timer)
+}
+
 const onReload = async () => {
   await testAndRunUrl()
+  startRefreshTimer()
 }
 
 const handleFailLoadEvent = (event) => {
@@ -111,6 +129,7 @@ const initIpcRender = () => {
   })
 }
 
+
 onMounted(async () => {
   el = document.querySelector('.inner-web')
   console.log(el)
@@ -126,6 +145,13 @@ onMounted(async () => {
   initWebview()
   await testAndRunUrl()
   initIpcRender()
+  startRefreshTimer()
+
+})
+
+
+onBeforeUnmount(() => {
+  stopRefreshTimer()
 })
 </script>
 

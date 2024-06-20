@@ -32,6 +32,7 @@
     "node-notifier": "^10.0.1",
     "nprogress": "^0.2.0",
     "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "systeminformation": "^5.22.7"
   },
   "devDependencies": {
