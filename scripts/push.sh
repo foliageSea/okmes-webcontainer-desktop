@@ -3,6 +3,8 @@
 # 定义分支名称
 BRANCH_NAME="main"
 
+export https_proxy=http://127.0.0.1:7890; export http_proxy=http://127.0.0.1:7890;
+
 # 推送到第一个远程仓库
 git push origin $BRANCH_NAME
 

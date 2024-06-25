@@ -5,8 +5,15 @@ import path from 'path'
 import { StateMessageState, MessageActions } from './message_handler'
 import { Snowflake, getRandomAlias } from './util'
 
+function getLocalStoragePath() {
+  if (process.platform === 'linux') {
+    return '/opt/OkMes-WebContainer'
+  }
+  return process.cwd()
+}
+
 export default class controller {
-  static localStorage = new LocalStorage(path.join(process.cwd(), 'config'))
+  static localStorage = new LocalStorage(path.join(getLocalStoragePath(), 'config'))
   static mainWindow = null
   static config = {
     id: 1,
