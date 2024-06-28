@@ -13,7 +13,7 @@ function getLocalStoragePath() {
 }
 
 export default class controller {
-  static localStorage = new LocalStorage(path.join(getLocalStoragePath(), 'config'))
+  static localStorage = new LocalStorage(path.join(__dirname, 'config'))
   static mainWindow = null
   static config = {
     id: 1,

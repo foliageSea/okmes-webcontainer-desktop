@@ -19,6 +19,8 @@ global.ensureInitialized()
 // Socket.init()
 
 app.whenReady().then(() => {
+  console.log('配置文件:', path.join(__dirname, 'config'))
+
   electronApp.setAppUserModelId('com.sunpn')
 
   app.on('browser-window-created', (_, window) => {
