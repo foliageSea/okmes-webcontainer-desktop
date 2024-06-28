@@ -12,8 +12,9 @@ import global from './global'
 // if (!lock) {
 //   return
 // }
-app.commandLine.appendSwitch('no-sandbox')
-app.commandLine.hasSwitch('disable-gpu')
+process.on('uncaughtException', (err) => {
+  console.error('全局错误捕获', err)
+})
 
 global.ensureInitialized()
 
