@@ -2,8 +2,7 @@ import { app, BrowserWindow } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { createWindow } from './windows'
 import './ipc'
-import global from './global'
-import Socket from './socket'
+import global, { getLocalStoragePath } from './global'
 
 // 防止应用重复启动
 // const lock = app.requestSingleInstanceLock({
@@ -16,11 +15,7 @@ import Socket from './socket'
 
 global.ensureInitialized()
 
-// Socket.init()
-
 app.whenReady().then(() => {
-  console.log('配置文件:', path.join(__dirname, 'config'))
-
   electronApp.setAppUserModelId('com.sunpn')
 
   app.on('browser-window-created', (_, window) => {

@@ -1,19 +1,17 @@
 import { isNil } from 'lodash'
 import { LocalStorage } from 'node-localstorage'
 import path from 'path'
+import os from 'os'
 
 import { StateMessageState, MessageActions } from './message_handler'
 import { Snowflake, getRandomAlias } from './util'
 
-function getLocalStoragePath() {
-  if (process.platform === 'linux') {
-    return '/opt/OkMes-WebContainer'
-  }
-  return process.cwd()
+export function getLocalStoragePath() {
+  return os.homedir()
 }
 
 export default class controller {
-  static localStorage = new LocalStorage(path.join(__dirname, 'config'))
+  static localStorage
   static mainWindow = null
   static config = {
     id: 1,
@@ -80,6 +78,9 @@ export default class controller {
   }
 
   static ensureInitialized() {
+    const dir = path.join(getLocalStoragePath(), 'OkMesWebcontainer')
+    controller.localStorage = new LocalStorage(dir)
+    console.log('配置文件:', dir)
     controller._initConfig('config', controller.config)
   }
 }
