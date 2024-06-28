@@ -2,7 +2,7 @@ import { app, BrowserWindow } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { createWindow } from './windows'
 import './ipc'
-import global, { getLocalStoragePath } from './global'
+import global from './global'
 
 // 防止应用重复启动
 // const lock = app.requestSingleInstanceLock({
@@ -12,6 +12,8 @@ import global, { getLocalStoragePath } from './global'
 // if (!lock) {
 //   return
 // }
+app.commandLine.appendSwitch('no-sandbox')
+app.commandLine.hasSwitch('disable-gpu')
 
 global.ensureInitialized()
 
