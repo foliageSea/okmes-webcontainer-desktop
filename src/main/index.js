@@ -24,13 +24,13 @@ if (!isFirstInstance) {
 }
 
 // 开机自启
-if (import.meta.env.MODE !== 'development') {
-  if (app.getLoginItemSettings().openAtLogin === false) {
-    app.setLoginItemSettings({
-      openAtLogin: true,
-      openAsHidden: false
-    })
-  }
+if (app.isPackaged) {
+  const ex = process.execPath
+  app.setLoginItemSettings({
+    openAtLogin: true,
+    path: ex,
+    args: []
+  })
 }
 
 app.whenReady().then(() => {
