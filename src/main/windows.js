@@ -22,14 +22,14 @@ export function createWindow() {
       webviewTag: true
     },
     fullscreen: import.meta.env.MODE !== 'development',
-    closable: false
+    closable: true
   })
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     mainWindow.setTitle('OkMes-WebContainer')
     if (import.meta.env.MODE === 'development') {
-      mainWindow.webContents.openDevTools()
+      // mainWindow.webContents.openDevTools()
     }
   })
 

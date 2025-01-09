@@ -22,8 +22,10 @@
         :size="16"
         class="right-1 top-1 hover:text-blue"
         style="position: absolute"
-        ><Close
-      /></el-icon>
+      >
+        <Close
+        />
+      </el-icon>
     </div>
   </main>
 </template>
