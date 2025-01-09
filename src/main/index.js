@@ -18,6 +18,21 @@ process.on('uncaughtException', (err) => {
 
 global.ensureInitialized()
 
+const isFirstInstance = app.requestSingleInstanceLock()
+if (!isFirstInstance) {
+  app.quit()
+}
+
+// 开机自启
+if (import.meta.env.MODE !== 'development') {
+  if (app.getLoginItemSettings().openAtLogin === false) {
+    app.setLoginItemSettings({
+      openAtLogin: true,
+      openAsHidden: false
+    })
+  }
+}
+
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.sunpn')
 
@@ -28,16 +43,6 @@ app.whenReady().then(() => {
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-
-  // 开机自启
-  if (import.meta.env.MODE !== 'development') {
-    if (app.getLoginItemSettings().openAtLogin === false) {
-      app.setLoginItemSettings({
-        openAtLogin: true,
-        openAsHidden: false
-      })
-    }
-  }
 
   createWindow()
 })
