@@ -1,4 +1,4 @@
-appId: com.sunpn.app
+appId: com.sunpn.okmes-webcontainer-desktop
 productName: OkMes-WebContainer
 directories:
   buildResources: build

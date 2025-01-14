@@ -1,40 +1,24 @@
 import { app, BrowserWindow } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
+import { basename } from 'path'
 import { createWindow } from './windows'
 import './ipc'
 import global from './global'
 
-// 防止应用重复启动
-// const lock = app.requestSingleInstanceLock({
-//   key: 'OkMesWebContainer'
-// })
-
-// if (!lock) {
-//   return
-// }
 process.on('uncaughtException', (err) => {
   console.error('全局错误捕获', err)
 })
-
-global.ensureInitialized()
 
 const isFirstInstance = app.requestSingleInstanceLock()
 if (!isFirstInstance) {
   app.quit()
 }
 
-// 开机自启
-if (app.isPackaged) {
-  const ex = process.execPath
-  app.setLoginItemSettings({
-    openAtLogin: true,
-    path: ex,
-    args: []
-  })
-}
+
+global.ensureInitialized()
 
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.sunpn')
+  electronApp.setAppUserModelId('com.sunpn.okmes-webcontainer-desktop')
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
@@ -45,6 +29,15 @@ app.whenReady().then(() => {
   })
 
   createWindow()
+
+  if (app.isPackaged) {
+    const loginSettings = app.getLoginItemSettings()
+    if (!loginSettings.openAtLogin) {
+      app.setLoginItemSettings({
+        openAtLogin: true,
+      })
+    }
+  }
 })
 
 app.on('window-all-closed', () => {

@@ -26,7 +26,14 @@ export class MessageActions {
 }
 
 export class MessageHandler {
-  static handle(topic, message) {
+  constructor() {
+    if (MessageHandler.instance) {
+      return MessageHandler.instance
+    }
+    MessageHandler.instance = this
+  }
+
+  handle(topic, message) {
     // console.log(topic, message.toString());
     const [softwareType, action, deviceId] = topic.split('/')
     if (isEmpty(softwareType)) return
@@ -35,31 +42,31 @@ export class MessageHandler {
     const msg = JSON.parse(message.toString())
     switch (action) {
       case MessageActions.state:
-        MessageHandler.handleStateMessage(topic, msg)
+        this.handleStateMessage(topic, msg)
         break
       case MessageActions.debug:
-        MessageHandler.handleDebugMessage(topic, msg)
+        this.handleDebugMessage(topic, msg)
         break
       case MessageActions.rename:
-        MessageHandler.handleRenameMessage(topic, msg)
+        this.handleRenameMessage(topic, msg)
         break
       case MessageActions.command:
-        MessageHandler.handleCommandMessage(topic, msg)
+        this.handleCommandMessage(topic, msg)
         break
     }
   }
 
-  static handleStateMessage(topic, msg) {
+  handleStateMessage(topic, msg) {
     const { state } = msg
     switch (state) {
       case StateMessageState.sync:
         // 同步状态消息
-        MessageHandler.handleStateMessageStateSync(topic, msg)
+        this.handleStateMessageStateSync(topic, msg)
         break
     }
   }
 
-  static handleStateMessageStateSync(topic, msg) {
+  handleStateMessageStateSync(topic, msg) {
     global.stateMessage = cloneDeep(msg)
     const { properties } = global.stateMessage
 
@@ -68,18 +75,18 @@ export class MessageHandler {
         case 'url':
           global.config.url = a.value
           global.saveConfig()
-          MessageHandler.message('同步配置成功')
+          this.message('同步配置成功')
           global.mainWindow.webContents.send('refreshConfig')
           break
       }
     })
   }
 
-  static handleDebugMessage(topic, msg) {
+  handleDebugMessage(topic, msg) {
     global.mainWindow.webContents.send('debugMessage', msg)
   }
 
-  static handleRenameMessage(topic, msg) {
+  handleRenameMessage(topic, msg) {
     const { alias } = msg
     if (isNil(alias)) return
     if (alias === global.config.alias) return
@@ -87,19 +94,21 @@ export class MessageHandler {
     global.saveConfig()
   }
 
-  static handleCommandMessage(topic, msg) {
+  handleCommandMessage(topic, msg) {
     console.log(topic, msg)
 
     const { command } = msg
     switch (command) {
       case 'reload':
         global.mainWindow.webContents.send('reload')
-        MessageHandler.message('刷新网页成功')
+        this.message('刷新网页成功')
         break
     }
   }
 
-  static message(msg) {
+  message(msg) {
     global.mainWindow.webContents.send('message', msg)
   }
 }
+
+export default new MessageHandler()

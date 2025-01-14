@@ -1,6 +1,6 @@
 {
   "name": "okmes-webcontainer-desktop",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "OkMes WebContainer",
   "main": "./out/main/index.js",
   "author": "sunpn",
@@ -22,7 +22,9 @@
     "@electron-toolkit/utils": "^3.0.0",
     "@element-plus/icons-vue": "^2.3.1",
     "@unocss/vite": "^0.59.2",
+    "auto-launch": "^5.0.6",
     "axios": "^1.6.8",
+    "electron-settings": "^4.0.4",
     "electron-updater": "^6.1.7",
     "element-plus": "^2.7.0",
     "lodash": "^4.17.21",
